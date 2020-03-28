@@ -1,2 +1,7 @@
 datasets/
+
+models-and-results-UTKface_inthewild-balanced/
+
+models-and-results-UTKface_inthewild-imbalanced/
+
 .ipynb_checkpoints
