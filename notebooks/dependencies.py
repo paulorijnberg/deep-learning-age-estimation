@@ -12,7 +12,7 @@ from sklearn.utils import shuffle
 import keras
 from keras import models
 from keras.models import Model
-from keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense, Activation, BatchNormalization, Input
+from keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense, Activation, BatchNormalization, Input, GlobalAveragePooling2D
 from keras import layers
 from keras.preprocessing.image import ImageDataGenerator # To create an image generator to create batches of images
 from keras.preprocessing import image # To change images to an np array AND visualize the image
