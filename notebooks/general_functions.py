@@ -7,6 +7,7 @@ import pickle
 # Preprocessing
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.utils import shuffle
+from sklearn.metrics import classification_report, confusion_matrix
 
 # Neural network related
 import keras
@@ -22,6 +23,7 @@ from keras.callbacks import ModelCheckpoint # To save best model
 
 from keras.utils.vis_utils import plot_model # To plot models
 import pydot # To plot models
+import seaborn as sn
 
 # Visualizing/visualizing activation of conv layers
 import matplotlib.pyplot as plt
@@ -175,3 +177,26 @@ def plot_image_activation(model_path, weights_path, img_path):
     
     # Delete img after showing
     os.remove(output)
+    
+    
+def plot_confusion_matrix(model_path, weights_path, generator):
+    """
+    Create a confusion matrix
+    """
+    model  = load_neural_network(model_path,
+                                 weights_path)
+    
+    y_pred = model.predict_generator(generator)
+    y_pred = np.argmax(y_pred, axis=1)
+    y_true = generator.classes
+    labels = ['1-10', '11-20', '21-30', '31-40', '41-50', '51-60', '61-70']
+    
+    
+    cm = confusion_matrix(y_true, y_pred)
+    df_cm = pd.DataFrame(cm, 
+                         index = [i for i in labels],
+                         columns = [i for i in labels])
+    plt.figure(figsize = (10,7))
+    sn.heatmap(df_cm, annot=True,cmap="OrRd")
+    plt.xlabel("Predicted label")
+    plt.ylabel("True label")
