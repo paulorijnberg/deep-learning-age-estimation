@@ -181,8 +181,9 @@ def plot_image_activation(model_path, weights_path, img_path):
     
 def plot_confusion_matrix(model_path, weights_path, generator):
     """
-    Create a confusion matrix
+    Create a confusion matrix and outputs the mean class accuracy.
     """
+    # Make prediction with model
     model  = load_neural_network(model_path,
                                  weights_path)
     
@@ -190,9 +191,49 @@ def plot_confusion_matrix(model_path, weights_path, generator):
     y_pred = np.argmax(y_pred, axis=1)
     y_true = generator.classes
     labels = ['1-10', '11-20', '21-30', '31-40', '41-50', '51-60', '61-70']
+    labels_numbered = [index for index, label in enumerate(labels)]
+    
+    ### Print mean class accuracy ####
+    count_classes    = [[label, len([number for number in y_true if number == index])] for index, label in enumerate(labels_numbered)]
+    
+    # Count amount of y_true of each class
+    all_label_counts = []
+        
+    for index, label in enumerate(count_classes):
+        if index == 0: 
+            all_label_counts.append([label[0], label[1]])
+            
+        else: 
+            all_label_counts.append([label[0], label[1] + all_label_counts[index - 1][1]])
+        
+    # Create nested lists of each class and the predicted values
+    y_pred_binned = []
+    for index, label in enumerate(all_label_counts):
+        if index == 0:
+            y_pred_binned.append([label[0], y_pred[:label[1]]])
+
+        else:
+            y_pred_binned.append([label[0], y_pred[all_label_counts[index - 1][1]:label[1]]])
     
     
-    cm = confusion_matrix(y_true, y_pred)
+    # Calculate mean class accuracies
+    y_pred_binned_mca = []
+    for index, collection in enumerate(y_pred_binned):   
+        len_of_index = len(collection[1][collection[1] == index])
+        accuracy     = len_of_index/count_classes[index][1]
+
+        y_pred_binned_mca.append([index, accuracy])
+
+    # Print accuracies
+    print('Mean class accuracies:\n')
+    for index, class_accuracy in enumerate(y_pred_binned_mca):
+        print('Class {} has an accuracy of {} (total predicted {}).'
+              .format(labels[index],
+                      round(class_accuracy[1], 2),
+                      count_classes[index][1]))
+    
+    ### Confusion matrix ###
+    cm = confusion_matrix(y_pred, y_true)
     df_cm = pd.DataFrame(cm, 
                          index = [i for i in labels],
                          columns = [i for i in labels])
@@ -200,3 +241,4 @@ def plot_confusion_matrix(model_path, weights_path, generator):
     sn.heatmap(df_cm, annot=True,cmap="OrRd")
     plt.xlabel("Predicted label")
     plt.ylabel("True label")
+    plt.title("Confusion matrix")
