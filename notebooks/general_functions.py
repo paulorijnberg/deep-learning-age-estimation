@@ -29,6 +29,7 @@ import seaborn as sn
 import matplotlib.pyplot as plt
 import cv2
 import matplotlib.image as mpimg
+import keract
 
 # To clear ram
 from tensorflow.keras import backend as K
@@ -227,13 +228,12 @@ def plot_confusion_matrix(model_path, weights_path, generator):
     # Print accuracies
     print('Mean class accuracies:\n')
     for index, class_accuracy in enumerate(y_pred_binned_mca):
-        print('Class {} has an accuracy of {} (total predicted {}).'
+        print('Class {} has an accuracy of {}.'
               .format(labels[index],
-                      round(class_accuracy[1], 2),
-                      count_classes[index][1]))
+                      round(class_accuracy[1], 2)))
     
     ### Confusion matrix ###
-    cm = confusion_matrix(y_pred, y_true)
+    cm = confusion_matrix(y_true, y_pred)
     df_cm = pd.DataFrame(cm, 
                          index = [i for i in labels],
                          columns = [i for i in labels])
@@ -242,3 +242,30 @@ def plot_confusion_matrix(model_path, weights_path, generator):
     plt.xlabel("Predicted label")
     plt.ylabel("True label")
     plt.title("Confusion matrix")
+    
+    
+def plot_layers(model_path, best_val_score, img_path, target_size_img, color_mode_img):
+    """
+    Credits: https://github.com/philipperemy/keract
+    """
+    
+    model = load_neural_network(model_path, best_val_score)
+    
+    counter = 0
+    for layer in model.layers:
+        if 'conv' in layer.name: 
+            last_conv_layer_name = layer.name
+            counter += 1
+        
+        if counter > 5:
+            break
+    
+    
+    img = image.load_img(img_path, target_size=(target_size_img), color_mode=color_mode_img)
+    img_tensor = image.img_to_array(img)
+    img_tensor = np.expand_dims(img_tensor, axis=0)
+    img_tensor /= 255.
+    
+    
+    activations = keract.get_activations(model, img_tensor, layer_name=last_conv_layer_name)
+    keract.display_heatmaps(activations, img_tensor)
