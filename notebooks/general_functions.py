@@ -99,86 +99,73 @@ def load_neural_network(model_path, weights_path):
     # Return model
     return model
 
-def plot_image_activation(model_path, weights_path, img_path):
-    """
-    This images shows the activation of the last convolutional layer.
-    """
     
-    # Define model
+def plot_image_activation(model_path, weights_path, img_path, label, plot_layer):
+    """
+    Modified code from https://towardsdatascience.com/understanding-your-convolution-network-with-visualizations-a4883441533b.
+    """
+    # Print statement
+    print('Here we show the results of the layer activations of layer: {}.'.format(plot_layer))
+    
+    # Load model
     model = load_neural_network(model_path, weights_path)
     
-    # Extract model_input_shape and relevant information
+    # Input shape
     model_input_shape = model.layers[0].input_shape
-    
-    # Define color mode
-    if model_input_shape[-1] == 1:
-        color_mode = 'grayscale'
         
-    elif model_input_shape[-1] == 3:
-        color_mode = 'rgb'
+    if model_input_shape[3] == 1:
+        img = image.load_img(img_path, target_size=(model_input_shape[1], model_input_shape[2]), color_mode = 'grayscale')
+        x = image.img_to_array(img)
+        x = np.expand_dims(x, axis=0)
+        x = x / 255
     
-    # Extract target size
-    target_size = model.layers[0].input_shape[1:3]
-    
-    # Load the image that we want to plot
-    img = image.load_img(path        = img_path,
-                         color_mode  = color_mode,
-                         target_size = target_size)
-    x = image.img_to_array(img)
-    x = np.expand_dims(x, axis=0)
-    
-    if model_input_shape[-1] == 3:
+    if model_input_shape[3] == 3:
+        img = image.load_img(img_path, target_size=(model_input_shape[1], model_input_shape[2]), color_mode = 'rgb')
+        x = image.img_to_array(img)
+        x = np.expand_dims(x, axis=0)
+        x = x / 255
         x = preprocess_input(x)
         
-    
-    # Make a prediction
-    preds = model.predict(x)
-    
-    # Print predictions
-    print('Predictions: {}.'.format(preds))
-    
-    
-    # Get information of the prediction
-    argmax = np.argmax(preds[0])
-    output = model.output[:, argmax]
-    
-    for layer in model.layers:
-        if 'conv' in layer.name: 
+    # Get last conv layer
+    for layer in model.layers: 
+        if plot_layer in layer.name: 
             last_conv_layer_name = layer.name
+                
+    model_output = model.output[:, 0]
     last_conv_layer = model.get_layer(last_conv_layer_name)
-
-    grads = K.gradients(output, last_conv_layer.output)[0]
+    
+    # Extract necessary information
+    grads = K.gradients(model_output, last_conv_layer.output)[0]
     pooled_grads = K.mean(grads, axis=(0, 1, 2))
     iterate = K.function([model.input], [pooled_grads, last_conv_layer.output[0]])
     pooled_grads_value, conv_layer_output_value = iterate([x])
     
-    for i in range(last_conv_layer.output_shape[-1]):
+   # Loop over the filters
+    filters = last_conv_layer.filters
+    for i in range(filters):
         conv_layer_output_value[:, :, i] *= pooled_grads_value[i]
 
-    
-    # Plot the result
     heatmap = np.mean(conv_layer_output_value, axis=-1)
     heatmap = np.maximum(heatmap, 0)
     heatmap /= np.max(heatmap)
-    
+
+    #Using cv2 to superimpose the heatmap on original image to clearly illustrate activated portion of image
     img = cv2.imread(img_path)
     heatmap = cv2.resize(heatmap, (img.shape[1], img.shape[0]))
     heatmap = np.uint8(255 * heatmap)
     heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
-    hif = .8
-    superimposed_img = heatmap * hif + img
-
+    superimposed_img = heatmap * 0.4 + img
+    
     output = os.path.join(os.getcwd(), 'test.jpeg')
     cv2.imwrite(output, superimposed_img)
 
     img = mpimg.imread(output)
-    
-    plt.imshow(img)
-    plt.axis('off')    
-    
+
+    plt.imshow(img);
+    plt.axis('off')
+
     # Delete img after showing
     os.remove(output)
-    
     
 def plot_confusion_matrix(model_path, weights_path, generator):
     """
