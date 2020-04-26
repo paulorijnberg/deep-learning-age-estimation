@@ -19,6 +19,7 @@ from keras.preprocessing import image # To change images to an np array AND visu
 from keras import optimizers # to optimize
 from keras.models import load_model # Load model
 from keras.callbacks import ModelCheckpoint # To save best model
+from tensorflow.keras import regularizers
 
 from keras.utils.vis_utils import plot_model # To plot models
 import pydot # To plot models
