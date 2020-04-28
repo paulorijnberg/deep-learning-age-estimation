@@ -15,7 +15,8 @@ Because the folder `notebook` is such a deeply nested folders, I want to also gi
 **Folder: notebooks**
 - Modules: 
   - `general_functions.py`: This module contains selfmade functions such as e.g. plotting results, confusion matrix, displaying image activations, etc.
-  - `dependencies.py`: Module that containts all the libaries.
+  - `dependencies.py`: Module that contains all the libaries.
+  - `keract.py`: Module from https://github.com/philipperemy/keract with function to plot layer activations.
 
 <br>
 
