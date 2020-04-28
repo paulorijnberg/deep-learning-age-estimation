@@ -44,6 +44,7 @@ from keras.applications.resnet50 import preprocess_input, decode_predictions
 
 from keras.applications.vgg16 import VGG16
 from keras.applications.vgg16 import preprocess_input
+from keras.applications.vgg19 import VGG19
 
 
 pd.set_option('max_colwidth', None)
