@@ -7,27 +7,29 @@ import pickle
 # Preprocessing
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.utils import shuffle
+from sklearn.metrics import classification_report, confusion_matrix
 
 # Neural network related
 import keras
 from keras import models
 from keras.models import Model
-from keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense, Activation, BatchNormalization, Input, GlobalAveragePooling2D
+from keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense, Activation, BatchNormalization, Input
 from keras import layers
 from keras.preprocessing.image import ImageDataGenerator # To create an image generator to create batches of images
 from keras.preprocessing import image # To change images to an np array AND visualize the image
 from keras import optimizers # to optimize
 from keras.models import load_model # Load model
 from keras.callbacks import ModelCheckpoint # To save best model
-from tensorflow.keras import regularizers
 
 from keras.utils.vis_utils import plot_model # To plot models
 import pydot # To plot models
+import seaborn as sn
 
 # Visualizing/visualizing activation of conv layers
 import matplotlib.pyplot as plt
 import cv2
 import matplotlib.image as mpimg
+import keract
 
 # To clear ram
 from tensorflow.keras import backend as K
@@ -42,7 +44,6 @@ from keras.applications.resnet50 import preprocess_input, decode_predictions
 
 from keras.applications.vgg16 import VGG16
 from keras.applications.vgg16 import preprocess_input
-
 
 
 pd.set_option('max_colwidth', None)
