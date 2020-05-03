@@ -3,6 +3,8 @@ Hi,
 
 Welcome to my first repo that I created using deep learning techniques (especially CNNs). This GitHub repo explores the possibilities of using deep learning techniques on facial images to estimate someones age. 
 
+In this repo we use the UTKFace dataset (https://susanqq.github.io/UTKFace/). Even though we experimented 'In-the-wild Faces',  'Aligned&Cropped Faces', balanced and imbalanced datasets, we narrowed down the project to a balanced 'Aligned&Cropped Faces' dataset. 
+
 The repo consists of the following folders:
 * `final-paper`: the final paper that summarizes the results of the experience and was submitted for the Deep Learning course.
 * `literature-research`: the collection of papers used in the process of doing the experiments and writing the final paper.
